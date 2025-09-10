@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Management Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #2d6cdf;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-size: 22px;
+    }
+    .container {
+      width: 90%;
+      max-width: 900px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #2d6cdf;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+    button {
+      background: #2d6cdf;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background: #1d4db5;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+      text-align: center;
+      padding: 10px;
+    }
+    th {
+      background: #2d6cdf;
+      color: white;
+    }
+    .highlight {
+      background: #e3f2fd;
+    }
+  </style>
+</head>
+<body>
+
+  <header>Student Management Dashboard</header>
+
+  <div class="container">
+    <h2>Add Student</h2>
+    <input type="text" id="roll" placeholder="Enter Roll Number">
+    <input type="text" id="name" placeholder="Enter Student Name">
+    <input type="number" id="marks1" placeholder="Marks in Subject 1">
+    <input type="number" id="marks2" placeholder="Marks in Subject 2">
+    <input type="number" id="marks3" placeholder="Marks in Subject 3">
+    <input type="number" id="marks4" placeholder="Marks in Subject 4">
+    <input type="number" id="marks5" placeholder="Marks in Subject 5">
+    <button onclick="addStudent()">Add Student</button>
+    
+    <h2>Search Student</h2>
+    <input type="text" id="searchRoll" placeholder="Enter Roll Number">
+    <button onclick="searchStudent()">Search</button>
+    
+    <h2>Student Records</h2>
+    <table id="studentTable">
+      <thead>
+        <tr>
+          <th>Roll</th>
+          <th>Name</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    
+    <h2>Topper</h2>
+    <div id="topper">No records yet</div>
+  </div>
+
+  <script>
+    let students = [];
+
+    function addStudent() {
+      let roll = document.getElementById("roll").value;
+      let name = document.getElementById("name").value;
+      let marks = [
+        parseFloat(document.getElementById("marks1").value),
+        parseFloat(document.getElementById("marks2").value),
+        parseFloat(document.getElementById("marks3").value),
+        parseFloat(document.getElementById("marks4").value),
+        parseFloat(document.getElementById("marks5").value),
+      ];
+
+      if (!roll || !name || marks.some(isNaN)) {
+        alert("Please fill all fields correctly!");
+        return;
+      }
+
+      let total = marks.reduce((a, b) => a + b, 0);
+      let percentage = (total / 5).toFixed(2);
+
+      students.push({ roll, name, percentage });
+
+      displayStudents();
+      findTopper();
+
+      document.querySelectorAll("input").forEach(i => i.value = "");
+    }
+
+    function displayStudents() {
+      let tbody = document.querySelector("#studentTable tbody");
+      tbody.innerHTML = "";
+      students.forEach(s => {
+        let row = `<tr>
+          <td>${s.roll}</td>
+          <td>${s.name}</td>
+          <td>${s.percentage}%</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function searchStudent() {
+      let roll = document.getElementById("searchRoll").value;
+      let tbody = document.querySelector("#studentTable tbody");
+      let rows = tbody.querySelectorAll("tr");
+      let found = false;
+
+      rows.forEach(r => {
+        r.classList.remove("highlight");
+        if (r.cells[0].textContent === roll) {
+          r.classList.add("highlight");
+          found = true;
+        }
+      });
+
+      if (!found) {
+        alert("Student not found!");
+      }
+    }
+
+    function findTopper() {
+      if (students.length === 0) return;
+      let topper = students.reduce((prev, current) => 
+        parseFloat(prev.percentage) > parseFloat(current.percentage) ? prev : current
+      );
+      document.getElementById("topper").innerText = 
+        `Topper: Roll ${topper.roll}, Name ${topper.name}, Percentage ${topper.percentage}%`;
+    }
+  </script>
+
+</body>
+</html>
